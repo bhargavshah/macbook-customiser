@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 // import App from './class-components/App';
 // import App from './higher-order-components/App';
-// import App from './functional-components/App';
+import App from './functional-components/App';
 // import App from './custom-hooks/App';
 // import App from './context/App';
 // import App from './error-boundry/App';
 // import App from './compound-components/App';
 // import App from './react-with-redux/App';
-import App from './redux-thunk/App';
+// import App from './redux-thunk/App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

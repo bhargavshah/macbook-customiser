@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import Customiser from './components/Customiser';
+import {SelectProcessor} from './components/ComponentSelectors';
 import Summary from './components/Summary';
 import Price from './components/Price';
-
-import { getCustomisableComponents } from '../service';
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -12,8 +10,29 @@ const App = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const getMacComponents = () => {
+      return fetch(`http://localhost:3004/components`)
+        .then(response => response.json())
+        .then(data => {
+          const newData = {};
+          const configurableComponents = Object.keys(data);
+          for (let i = 0; i < configurableComponents.length; i++) {
+            const component = [...data[configurableComponents[i]]];
+            for (let j = 0; j < component.length; j++) {
+              const element = {...component[j]};
+              element.selected = element.default;
+              component[j] = element;
+            }
+            newData[configurableComponents[i]] = component;
+          }
+          return newData;
+        })
+        .catch(() => {
+          throw new Error('could not fetch the customisable components');
+        });
+    }
     setLoading(true);
-    getCustomisableComponents()
+    getMacComponents()
       .then((data) => {
         setConfigurableComponents(data);
       })
@@ -25,10 +44,10 @@ const App = () => {
       })
   }, []);
 
-  const setSelectedVariant = (component, variantSerialNo) => {
+  const setSelectedVariant = (variantSerialNo) => {
     setConfigurableComponents({
       ...configurableComponents,
-      [component]: configurableComponents[component].map(variant => {
+      Processor: configurableComponents.Processor.map(variant => {
         return {
           ...variant,
           selected: variant.serialNo === variantSerialNo
@@ -69,7 +88,7 @@ const App = () => {
                     <>
                       <h1 className="mt-0">Customise your 16‑inch MacBook Pro - Space Grey</h1>
                       <Summary configurableComponents={configurableComponents} />
-                      <Customiser configurableComponents={configurableComponents} onSelectVariant={setSelectedVariant} />
+                      <SelectProcessor variants={configurableComponents.Processor} onSelectVariant={setSelectedVariant} />
                     </>
               }
             </section>
