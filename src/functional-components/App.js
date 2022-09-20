@@ -25,38 +25,40 @@ const App = () => {
               newData.push(data[i]);
             }
           }
-          return newData;
+          setProcessorList(newData);
+          setLoading(false);
         })
         .catch(() => {
-          throw new Error("could not fetch the customisable components");
+          setError(new Error("could not fetch the customisable components"));
+          setLoading(false);
         });
     };
     setLoading(true);
-    getMacComponents()
-      .then((data) => {
-        setProcessorList(data);
-      })
-      .catch((error) => {
-        setError(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    getMacComponents();
   }, []);
 
   const setSelectedVariant = (variantSerialNo) => {
-    setProcessorList(
-      processorList.map((variant) => {
-        return {
-          ...variant,
-          selected: variant.serialNo === variantSerialNo,
-        };
-      })
-    );
+    const newArr = [];
+    for (let i = 0; i < processorList.length; i++) {
+      const variant = processorList[i];
+      newArr.push({
+        ...variant,
+        selected: variant.serialNo === variantSerialNo,
+      });
+    }
+    setProcessorList(newArr);
   };
 
   const getAddOnPrice = () => {
-    return processorList.find((variant) => variant.selected)?.addOnPrice ?? 0;
+    let selectedProcessor = null;
+    for (let i = 0; i < processorList.length; i++) {
+      const variant = processorList[i];
+      if (variant.selected) {
+        selectedProcessor = variant;
+        break;
+      }
+    }
+    return selectedProcessor?.addOnPrice ?? 0;
   };
 
   return (
